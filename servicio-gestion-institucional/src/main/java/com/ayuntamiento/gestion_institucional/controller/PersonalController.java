@@ -17,7 +17,7 @@ public class PersonalController {
 
     private final PersonalService personalService;
 
-    // GET http://localhost:8083/api/personal
+    // GET http://localhost:8083/api/persona
     @GetMapping
     public ResponseEntity<List<PersonalDTO>> listarTodos() {
         return ResponseEntity.ok(personalService.listarTodos());
