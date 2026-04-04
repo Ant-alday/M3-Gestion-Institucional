@@ -15,21 +15,17 @@ public class Personal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 150)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
-    private String puesto;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_puesto", nullable = false)
+    private Puesto puesto;
 
-    // FK INTERNA — Personal y Departamento estan en la misma BD (db_gestion)
-    // Por eso SI usamos @ManyToOne con @JoinColumn
-    // Crea la columna departamento_id en la tabla personal
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "departamento_id", nullable = false)
-    private Departamento departamento;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cuadrilla", nullable = false)
+    private Cuadrilla cuadrilla;
 
-    // TINYINT(1) en MySQL — true = disponible, false = ocupado
-    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    @Builder.Default
+    @Column(nullable = false)
     private Boolean disponible = true;
 }

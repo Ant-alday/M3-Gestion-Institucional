@@ -7,17 +7,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class DepartamentoMapper {
 
-    // Entity → DTO  (para devolver al cliente)
-    public DepartamentoDTO toDTO(Departamento departamento) {
+    public DepartamentoDTO toDTO(Departamento model) {
+        if (model == null) return null;
         return DepartamentoDTO.builder()
-                .id(departamento.getId())
-                .nombre(departamento.getNombre())
-                .descripcion(departamento.getDescripcion())
+                .id(model.getId())
+                .nombre(model.getNombre())
+                .descripcion(model.getDescripcion())
                 .build();
     }
 
-    // DTO → Entity  (para guardar en BD)
-    public Departamento toEntity(DepartamentoDTO dto) {
+    public Departamento toModel(DepartamentoDTO dto) {
+        if (dto == null) return null;
         return Departamento.builder()
                 .nombre(dto.getNombre())
                 .descripcion(dto.getDescripcion())

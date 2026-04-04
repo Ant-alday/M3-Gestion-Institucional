@@ -1,33 +1,32 @@
 package com.ayuntamiento.gestion_institucional.mapper;
 
 import com.ayuntamiento.gestion_institucional.dto.PersonalDTO;
-import com.ayuntamiento.gestion_institucional.model.Departamento;
 import com.ayuntamiento.gestion_institucional.model.Personal;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PersonalMapper {
 
-    // Entity → DTO  (para devolver al cliente)
-    public PersonalDTO toDTO(Personal personal) {
+    public PersonalDTO toDTO(Personal model) {
+        if (model == null) return null;
         return PersonalDTO.builder()
-                .id(personal.getId())
-                .nombre(personal.getNombre())
-                .puesto(personal.getPuesto())
-                .disponible(personal.getDisponible())
-                .departamentoId(personal.getDepartamento().getId())
-                .departamentoNombre(personal.getDepartamento().getNombre())
+                .id(model.getId())
+                .nombre(model.getNombre())
+                .puestoId(model.getPuesto().getId())
+                .puestoNombre(model.getPuesto().getNombre())
+                .cuadrillaId(model.getCuadrilla().getId())
+                .cuadrillaNombre(model.getCuadrilla().getNombre())
+                .departamentoNombre(model.getCuadrilla().getDepartamento().getNombre())
+                .disponible(model.getDisponible())
                 .build();
     }
 
-    // DTO → Entity  (para guardar en BD)
-    // El departamento ya viene buscado desde el Service
-    public Personal toEntity(PersonalDTO dto, Departamento departamento) {
+    public Personal toModel(PersonalDTO dto) {
+        if (dto == null) return null;
+        // puesto y cuadrilla se asignan en el Service
         return Personal.builder()
                 .nombre(dto.getNombre())
-                .puesto(dto.getPuesto())
-                .departamento(departamento)
-                .disponible(dto.getDisponible() != null ? dto.getDisponible() : true)
+                .disponible(dto.getDisponible() != null ? dto.getDisponible() : Boolean.TRUE)
                 .build();
     }
 }

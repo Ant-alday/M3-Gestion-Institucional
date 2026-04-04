@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "departamento")
+@Table(name = "puesto")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Departamento {
+public class Puesto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +17,4 @@ public class Departamento {
 
     @Column(nullable = false, length = 100)
     private String nombre;
-
-    @Column(columnDefinition = "TEXT")
-    private String descripcion;
 }
