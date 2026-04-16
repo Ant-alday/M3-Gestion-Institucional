@@ -15,6 +15,7 @@ public class Personal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+<<<<<<< HEAD
     @Column(nullable = false, length = 100)
     private String nombre;
 
@@ -31,5 +32,19 @@ public class Personal {
     // TINYINT(1) en MySQL — true = disponible, false = ocupado
     @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
     @Builder.Default
+=======
+    @Column(nullable = false, length = 150)
+    private String nombre;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_puesto", nullable = false)
+    private Puesto puesto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cuadrilla", nullable = false)
+    private Cuadrilla cuadrilla;
+
+    @Column(nullable = false)
+>>>>>>> 52d7a8c0df7d3247d2930a3ecdce0567a2148320
     private Boolean disponible = true;
 }
