@@ -1,22 +1,8 @@
 package com.ayuntamiento.gestion_institucional.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
 
-// Sirve tanto para recibir datos del cliente (POST/PUT)
-// como para devolver la respuesta (GET)
-//
-// Ejemplo POST body:
-// { "nombre": "Juan Perez", "puesto": "Tecnico", "departamentoId": 1 }
-//
-// Ejemplo GET respuesta:
-// { "id": 1, "nombre": "Juan Perez", "puesto": "Tecnico",
-//   "departamentoId": 1, "departamentoNombre": "CAPACH", "disponible": true }
 
 @Data
 @NoArgsConstructor
@@ -24,20 +10,26 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PersonalDTO {
 
-    private Long id; // null al crear, lo genera la BD
+    private Long id;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(max = 100, message = "El nombre no puede superar 100 caracteres")
+    @NotNull(message = "El usuarioId es obligatorio. Debe ser el ID del empleado en MS1.")
+    private Long usuarioId;
+
+    @NotNull(message = "El puestoId es obligatorio")
+    private Long puestoId;
+
+    @NotNull(message = "La cuadrillaId es obligatoria")
+    private Long cuadrillaId;
+
+    private Boolean disponible;
+
+    // Campos enriquecidos desde MS1 via UsuarioAuthDto (solo en respuesta)
     private String nombre;
+    private String email;
+    private String telefono;
 
-    @NotBlank(message = "El puesto es obligatorio")
-    @Size(max = 100, message = "El puesto no puede superar 100 caracteres")
-    private String puesto;
-
-    @NotNull(message = "El id del departamento es obligatorio")
-    private Long departamentoId;
-
-    private String departamentoNombre; // solo viene en la respuesta GET
-
-    private Boolean disponible = true; // true por defecto al crear
+    // Campos enriquecidos desde MS3 (solo en respuesta)
+    private String puestoNombre;
+    private String cuadrillaNombre;
+    private String departamentoNombre;
 }

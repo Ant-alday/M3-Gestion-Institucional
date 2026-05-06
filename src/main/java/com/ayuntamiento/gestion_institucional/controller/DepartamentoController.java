@@ -4,53 +4,44 @@ import com.ayuntamiento.gestion_institucional.dto.DepartamentoDTO;
 import com.ayuntamiento.gestion_institucional.service.DepartamentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+
 @RestController
-@RequestMapping("/api/departamentos")
+@RequestMapping("/api/gestion/departamentos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class DepartamentoController {
 
     private final DepartamentoService departamentoService;
 
-    // GET http://localhost:8083/api/departamentos
     @GetMapping
-    public ResponseEntity<List<DepartamentoDTO>> listarTodos() {
-        return ResponseEntity.ok(departamentoService.listarTodos());
+    public ResponseEntity<List<DepartamentoDTO>> findAll() {
+        return ResponseEntity.ok(departamentoService.findAll());
     }
 
-    // GET http://localhost:8083/api/departamentos/1
     @GetMapping("/{id}")
-    public ResponseEntity<DepartamentoDTO> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(departamentoService.buscarPorId(id));
+    public ResponseEntity<DepartamentoDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(departamentoService.findById(id));
     }
 
-    // POST http://localhost:8083/api/departamentos
-    // Body: { "nombre": "CAPACH", "descripcion": "Agua potable" }
     @PostMapping
-    public ResponseEntity<DepartamentoDTO> guardar(
-            @Valid @RequestBody DepartamentoDTO dto) {
+    public ResponseEntity<DepartamentoDTO> save(@Valid @RequestBody DepartamentoDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(departamentoService.guardar(dto));
+                .body(departamentoService.save(dto));
     }
 
-    // PUT http://localhost:8083/api/departamentos/1
-    // Body: { "nombre": "CAPACH", "descripcion": "Nueva descripcion" }
     @PutMapping("/{id}")
-    public ResponseEntity<DepartamentoDTO> actualizar(
+    public ResponseEntity<DepartamentoDTO> update(
             @PathVariable Long id,
             @Valid @RequestBody DepartamentoDTO dto) {
-        return ResponseEntity.ok(departamentoService.actualizar(id, dto));
+        return ResponseEntity.ok(departamentoService.update(id, dto));
     }
 
-    // DELETE http://localhost:8083/api/departamentos/1
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        departamentoService.eliminar(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        departamentoService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

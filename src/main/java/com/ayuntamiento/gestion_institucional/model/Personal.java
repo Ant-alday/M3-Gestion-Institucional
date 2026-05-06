@@ -4,7 +4,13 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "personal")
+@Table(
+    name = "personal",
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_personal_usuario",
+        columnNames = "usuario_id"
+    )
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,21 +21,29 @@ public class Personal {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "usuario_id", nullable = false, unique = true)
+    private Long usuarioId;
+
+    @Column(length = 250)
     private String nombre;
 
-    @Column(nullable = false, length = 100)
-    private String puesto;
+    @Column(length = 250)
+    private String email;
 
-    // FK INTERNA — Personal y Departamento estan en la misma BD (db_gestion)
-    // Por eso SI usamos @ManyToOne con @JoinColumn
-    // Crea la columna departamento_id en la tabla personal
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "departamento_id", nullable = false)
-    private Departamento departamento;
+    @Column(length = 50)
+    private String rol;
 
-    // TINYINT(1) en MySQL — true = disponible, false = ocupado
-    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
-    @Builder.Default
+    @Column(length = 15)
+    private String telefono;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_puesto", nullable = false)
+    private Puesto puesto;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_cuadrilla", nullable = false)
+    private Cuadrilla cuadrilla;
+
+    @Column(nullable = false)
     private Boolean disponible = true;
 }

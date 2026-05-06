@@ -7,13 +7,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DepartamentoDTO {
+public class CuadrillaDTO {
 
     private Long id;
 
     @NotBlank(message = "El nombre no puede estar vacio")
-    @Size(max = 100, message = "El nombre no puede exceder 100 caracteres")
+    @Size(max = 100)
     private String nombre;
 
-    private String descripcion;
+    @NotNull(message = "El departamento es obligatorio")
+    private Long departamentoId;
+
+    private String departamentoNombre;   // solo en respuesta
 }

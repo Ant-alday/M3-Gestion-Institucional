@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "departamento")
+@Table(name = "cuadrilla")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Departamento {
+public class Cuadrilla {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public class Departamento {
     @Column(nullable = false, length = 100)
     private String nombre;
 
-    @Column(columnDefinition = "TEXT")
-    private String descripcion;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_departamento", nullable = false)
+    private Departamento departamento;
 }

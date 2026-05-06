@@ -1,0 +1,8 @@
+# .dockerignore — ignorar archivos innecesarios al construir la imagen
+target/classes/
+target/test-classes/
+.git/
+.idea/
+*.iml
+*.md
+src/test/
