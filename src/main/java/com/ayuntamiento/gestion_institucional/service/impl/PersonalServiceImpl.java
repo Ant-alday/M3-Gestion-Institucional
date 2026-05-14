@@ -34,7 +34,7 @@ public class PersonalServiceImpl implements PersonalService {
     private final PuestoRepository    puestoRepository;
     private final CuadrillaRepository cuadrillaRepository;
     private final PersonalMapper      personalMapper;
-    private final UsuarioClient       usuarioClient;   // libreria de MS1
+    private final UsuarioClient       usuarioClient;
 
     // ── Consultas a MS1 via libreria ─────────────────────────────
 
@@ -65,18 +65,26 @@ public class PersonalServiceImpl implements PersonalService {
     }
 
     // ── CRUD de Personal ─────────────────────────────────────────
-    	@Override
-    	@Transactional(readOnly = true)
-    	public List<PersonalDTO> findAll() {
-    	    Map<Long, UsuarioAuthDto> usuariosPorId = usuarioClient
-    	            .obtenerTodosLosUsuarios()
-    	            .stream()
-    	            .collect(Collectors.toMap(
-    	                UsuarioAuthDto::id,
-    	                u -> u));
 
-    	    return personalRepository.findAll().stream().map(p -> personalMapper.toDTO(p,usuariosPorId.get(p.getUsuarioId()))).collect(Collectors.toList());
-    	}
+    @Override
+    @Transactional(readOnly = true)
+    public List<PersonalDTO> findAll() {
+        // ✅ CORREGIDO: si AUTH falla, se retorna el personal con nombre "MS1 no disponible"
+        Map<Long, UsuarioAuthDto> usuariosPorId;
+        try {
+            usuariosPorId = usuarioClient.obtenerTodosLosUsuarios()
+                    .stream()
+                    .collect(Collectors.toMap(UsuarioAuthDto::id, u -> u));
+        } catch (Exception e) {
+            log.warn("⚠️ Auth-Service no disponible en findAll, se retorna personal sin datos de usuario: {}", e.getMessage());
+            usuariosPorId = Collections.emptyMap();
+        }
+
+        final Map<Long, UsuarioAuthDto> mapaFinal = usuariosPorId;
+        return personalRepository.findAll().stream()
+                .map(p -> personalMapper.toDTO(p, mapaFinal.get(p.getUsuarioId())))
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -107,7 +115,6 @@ public class PersonalServiceImpl implements PersonalService {
 
     @Override
     public PersonalDTO save(PersonalDTO dto) {
-        // Validar que el usuario existe en MS1 antes de registrarlo
         UsuarioAuthDto usuario = fetchUsuarioOrThrow(dto.getUsuarioId());
 
         if (personalRepository.existsByUsuarioId(dto.getUsuarioId())) {
@@ -178,12 +185,8 @@ public class PersonalServiceImpl implements PersonalService {
         personalRepository.deleteById(id);
     }
 
-    // ── Metodos auxiliares para llamar a la libreria ──────────────
+    // ── Metodos auxiliares ────────────────────────────────────────
 
-    /**
-     * Trae el usuario de MS1 via libreria.
-     * Si MS1 no esta disponible devuelve null (no rompe los GET).
-     */
     private UsuarioAuthDto fetchUsuario(Long usuarioId) {
         try {
             return usuarioClient.obtenerUsuario(usuarioId);
@@ -193,10 +196,6 @@ public class PersonalServiceImpl implements PersonalService {
         }
     }
 
-    /**
-     * Trae el usuario de MS1 y lanza excepcion si no existe o MS1 esta caido.
-     * Se usa en POST y PUT donde validar que el usuario exista es obligatorio.
-     */
     private UsuarioAuthDto fetchUsuarioOrThrow(Long usuarioId) {
         try {
             UsuarioAuthDto usuario = usuarioClient.obtenerUsuario(usuarioId);
@@ -216,37 +215,26 @@ public class PersonalServiceImpl implements PersonalService {
         }
     }
 
-	@Override
-	public String getNombreUsuarioDesdeMS1(Long usuarioId) {
-		try {
+    @Override
+    public String getNombreUsuarioDesdeMS1(Long usuarioId) {
+        try {
             UsuarioAuthDto usuario = usuarioClient.obtenerUsuario(usuarioId);
-            
             return usuario.email();
-            
         } catch (Exception e) {
             log.error("❌ Error de red al intentar obtener el nombre: {}", e.getMessage());
             return "Usuario Desconocido";
         }
+    }
 
-	}
-	
-	
-	
-	
-	
-	@Override
-	@Transactional(readOnly = true)
-	public List<String> getPermisosByPersonal(Long id) {
-	    Personal p = personalRepository.findById(id)
-	            .orElseThrow(() -> new ResourceNotFoundException(
-	                    "Personal no encontrado con id: " + id));
-	    
-	    Puesto puesto = puestoRepository.findById(p.getPuesto().getId())
-	            .orElseThrow(() -> new ResourceNotFoundException(
-	                    "Puesto no encontrado"));
-	    return puesto.getPermisos();
-	}
-	
-	
-	
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getPermisosByPersonal(Long id) {
+        Personal p = personalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Personal no encontrado con id: " + id));
+        Puesto puesto = puestoRepository.findById(p.getPuesto().getId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Puesto no encontrado"));
+        return puesto.getPermisos();
+    }
 }
